@@ -4,7 +4,7 @@ Arduino based quadripod with 3 servos
 
 Robot block diagram :
 
-
+<code>
 2*3.7V LiPo batteries -> lm2596 dc-dc to 6.5V -> 3 motions Servos + radar mini servo
           |                                           ^
           |                                           |
@@ -15,3 +15,4 @@ Robot block diagram :
         |  Bluetooth control
         |
    Ultra sound sensor
+</code>
