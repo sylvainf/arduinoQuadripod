@@ -16,3 +16,5 @@ Robot block diagram :
         |
    Ultra sound sensor
 </pre>
+
+![image](https://cloud.githubusercontent.com/assets/377778/7671552/a24be7e4-fcd5-11e4-8a29-57907ae6fc59.jpg)
