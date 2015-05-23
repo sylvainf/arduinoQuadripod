@@ -31,7 +31,10 @@ SoftwareSerial BT(ARDU_RX, ARDU_TX);
 #define LEFT 2
 #define RIGHT 3
 #define STOP 4
-#define START_CMD_CHAR '*'
+#define SPEED_CMD_CHAR 's'
+#define LEFT_CMD_CHAR 'l'
+#define RIGHT_CMD_CHAR 'r'
+#define FORWARD_CMD_CHAR 'f'
 int wPos,fPos,bPos,cycle,dir,rPos, superCycle,robotspeed;
 boolean evitement;
 String inText;
@@ -163,27 +166,27 @@ void loop()
 
   // wait for incoming data
   if (BT.available() > 0) { 
-
-    // parse incoming command start flag 
     get_char = BT.read();
-    if (get_char == START_CMD_CHAR) {
-      BT.println("commande recue ");
-  
-      // parse incoming command type
-      ard_command = BT.parseInt(); // read the command
-      
+    if (get_char == SPEED_CMD_CHAR) {
+      BT.println("speed command  ");
+      ard_command = BT.parseInt(); 
+      if (ard_command != 0)
+        {
+          robotspeed=(int)ard_command;
+          BT.println("Speed set to : ");
+          BT.println(robotspeed);
+        }
+    } else if(get_char == LEFT_CMD_CHAR) {
+      BT.println("left command");
+      dir=LEFT;
+    } else if(get_char == RIGHT_CMD_CHAR) {
+      BT.println("right command");
+      dir=RIGHT;
+    } else if(get_char == FORWARD_CMD_CHAR) {
+      BT.println("FORWARD command");
+      dir=FORWARD;
     }
   }
-
-
-   if (ard_command != 0)
-    {
-      robotspeed=(int)ard_command;
-      BT.println("Speed set to : ");
-      BT.println(robotspeed);
-    }
- 
-
 
 
   if (cycle==5){
@@ -225,7 +228,5 @@ void loop()
      digitalWrite(ledPin, HIGH);
      evitement = 1;
   }  
-  
-  
   
 }
