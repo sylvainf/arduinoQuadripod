@@ -1,3 +1,4 @@
+#include <SoftwareSerial.h>
 #include <NewPing.h>
 #include <Servo.h> 
 
@@ -6,14 +7,21 @@ Servo waist,front,back,radar;
 #define TRIGGER_PIN 7
 #define ECHO_PIN 8
 #define ledPin 2
+#define ARDU_TX 4
+#define ARDU_RX 5
+#define looptime 8
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, 100);
+//Serial connexion for bluetooth module
+SoftwareSerial BT(ARDU_RX, ARDU_TX); 
+
 
 // adjust values here to center your servos
 #define wCenter 87
 #define fCenter 90
 #define bCenter 105
 #define rCenter 90
+
 #define rSwing 40
 #define wSwing 17
 #define fSwing 27
@@ -23,8 +31,10 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, 100);
 #define LEFT 2
 #define RIGHT 3
 #define STOP 4
-int wPos,fPos,bPos,cycle,dir,rPos, superCycle;
+#define START_CMD_CHAR '*'
+int wPos,fPos,bPos,cycle,dir,rPos, superCycle,robotspeed;
 boolean evitement;
+String inText;
 
 
 
@@ -35,6 +45,9 @@ void setup()
   front.attach(10);
   back.attach(11);
   radar.attach(9);
+  BT.begin(9600);
+  BT.println("Robot connected !");
+  BT.flush();
   wPos=wCenter;
   fPos=fCenter;
   bPos=bCenter;
@@ -49,6 +62,7 @@ void setup()
   cycle=0;
   superCycle=0;
   evitement = 0;
+  robotspeed=1;  //lower is faster
 } 
 
 
@@ -133,19 +147,53 @@ void posUpdate() {
 void loop() 
 { 
   long distance;
+  char a;
+  int ard_command = 0;
+    
   posUpdate();
   waist.write(wPos);
   front.write(fPos);
   back.write(bPos);
 
+// lets manage with bluetooth
+//  BT.flush();
+
+
+  char get_char = ' ';  //read serial
+
+  // wait for incoming data
+  if (BT.available() > 0) { 
+
+    // parse incoming command start flag 
+    get_char = BT.read();
+    if (get_char == START_CMD_CHAR) {
+      BT.println("commande recue ");
+  
+      // parse incoming command type
+      ard_command = BT.parseInt(); // read the command
+      
+    }
+  }
+
+
+   if (ard_command != 0)
+    {
+      robotspeed=(int)ard_command;
+      BT.println("Speed set to : ");
+      BT.println(robotspeed);
+    }
+ 
+
+
+
   if (cycle==5){
       // No delay  
   } else {
     if(dir==LEFT or dir==RIGHT){ 
-        delay(8);
+        delay(looptime*robotspeed);
     }
     else {
-     delay(15);
+     delay(2*looptime*robotspeed);
     } 
   }
   
@@ -177,4 +225,7 @@ void loop()
      digitalWrite(ledPin, HIGH);
      evitement = 1;
   }  
+  
+  
+  
 }
