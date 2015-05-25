@@ -190,7 +190,11 @@ void loop()
 
 
   if (cycle==5){
-      // No delay  
+     // No delay
+     if (dir==FORWARD) { 
+       distance = readDist();
+     } 
+
   } else {
     if(dir==LEFT or dir==RIGHT){ 
         delay(looptime*robotspeed);
@@ -218,11 +222,6 @@ void loop()
    }
  }
  
- if (cycle==5) {
-   if (dir==FORWARD) { 
-     distance = readDist();
-   } 
- }
  
   if (distance < 40){
      digitalWrite(ledPin, HIGH);
